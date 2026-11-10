@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik – Flaggen-Raten.de</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <script>
+        (function () {
+            try {
+                var s = JSON.parse(localStorage.getItem('flaggen_settings') || '{}');
+                var t = s.theme || 'dark';
+                if (t === 'auto') t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="/fonts/fonts.css">
+    <style>
+        :root {
+            --bg: #0b1329;
+            --card: #131c38;
+            --border: #1e293b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --grid: #1e293b;
+            --bar: #3b82f6;
+            --bar-hover: #60a5fa;
+            --radius: 16px;
+        }
+        [data-theme="light"] {
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --grid: #e2e8f0;
+            --bar: #2563eb;
+            --bar-hover: #1d4ed8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+            min-height: 100vh;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--card);
+        }
+        header a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        header .back {
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem 3rem;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+        .sub {
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .notice {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+        .notice a { color: var(--bar-hover); font-weight: 700; }
+        .filters {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .filters button {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+        .filters button.active {
+            background: var(--bar);
+            border-color: var(--bar);
+            color: #fff;
+        }
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .tile {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.1rem;
+        }
+        .tile .label {
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .tile .value {
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-top: 0.25rem;
+            font-variant-numeric: tabular-nums;
+        }
+        .tile .hint {
+            color: var(--muted);
+            font-size: 0.75rem;
+            margin-top: 0.15rem;
+        }
+        .grid2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 0.75rem;
+        }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.1rem 1.1rem 0.9rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+        .card h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+        .card .card-sub {
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+        .chart svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+        .chart text {
+            fill: var(--muted);
+            font-size: 11px;
+            font-family: inherit;
+        }
+        .chart .gridline { stroke: var(--grid); stroke-width: 1; }
+        .chart .bar { fill: var(--bar); }
+        .chart .hit:hover + .bar,
+        .chart .bar.hover { fill: var(--bar-hover); }
+        .chart .hit { fill: transparent; cursor: default; }
+        .chart .val { fill: var(--text); font-weight: 700; font-size: 12px; }
+        .chart .empty { fill: var(--muted); font-size: 13px; }
+        .tooltip {
+            position: fixed;
+            pointer-events: none;
+            background: var(--text);
+            color: var(--bg);
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transform: translate(-50%, calc(-100% - 10px));
+            opacity: 0;
+            transition: opacity 0.1s;
+            z-index: 10;
+        }
+        details {
+            margin-top: 0.5rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        details summary { cursor: pointer; font-weight: 600; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+            font-variant-numeric: tabular-nums;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.35rem 0.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+        th { color: var(--text); }
+        td:not(:first-child), th:not(:first-child) { text-align: right; }
+        .foot {
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/">🌍 Flaggen-Raten.de</a>
+        <a class="back" href="/">← Zur Seite</a>
+    </header>
+
+    <main>
+        <h1>📊 Statistik</h1>
+        <p class="sub">Nur für dich sichtbar · ohne Cookies · Zeiten in deutscher Zeit</p>
+
+        <div id="status" class="notice">Statistik wird geladen …</div>
+
+        <div id="dashboard" style="display: none;">
+            <div class="filters" id="filters">
+                <button data-range="7">7 Tage</button>
+                <button data-range="30" class="active">30 Tage</button>
+                <button data-range="365">12 Monate</button>
+                <button data-range="all">Alles</button>
+            </div>
+
+            <div class="tiles">
+                <div class="tile"><div class="label">Besuche</div><div class="value" id="t-visits">0</div><div class="hint" id="t-visits-hint"></div></div>
+                <div class="tile"><div class="label">Ø Verweildauer</div><div class="value" id="t-duration">–</div><div class="hint">pro Besuch</div></div>
+                <div class="tile"><div class="label">Gespielte Runden</div><div class="value" id="t-games">0</div><div class="hint" id="t-games-hint"></div></div>
+                <div class="tile"><div class="label">Neue Accounts</div><div class="value" id="t-signups">0</div><div class="hint" id="t-users-total"></div></div>
+                <div class="tile"><div class="label">Handy</div><div class="value" id="t-mobile">–</div><div class="hint" id="t-desktop"></div></div>
+            </div>
+
+            <div class="card">
+                <h2>Besuche</h2>
+                <p class="card-sub" id="visits-sub">pro Tag</p>
+                <div class="chart" id="chart-visits"></div>
+                <details>
+                    <summary>Als Tabelle anzeigen</summary>
+                    <table id="table-visits"></table>
+                </details>
+            </div>
+
+            <div class="card">
+                <h2>Gespielte Runden</h2>
+                <p class="card-sub" id="games-sub">pro Tag</p>
+                <div class="chart" id="chart-games"></div>
+            </div>
+
+            <div class="grid2">
+                <div class="card">
+                    <h2>Runden nach Modus</h2>
+                    <p class="card-sub">im gewählten Zeitraum</p>
+                    <div class="chart" id="chart-modes"></div>
+                </div>
+                <div class="card">
+                    <h2>Runden nach Level</h2>
+                    <p class="card-sub">Klassisch, Umgedreht und Karte zusammen</p>
+                    <div class="chart" id="chart-levels"></div>
+                </div>
+            </div>
+
+            <p class="foot">
+                Gezählt werden Besuche (Seitenaufrufe), keine einzelnen Personen. Verweildauer = Zeit, in der die Seite sichtbar geöffnet war.
+                Testaufrufe vom eigenen PC (Live Server) werden nicht gezählt.
+                <span id="first-day"></span>
+            </p>
+        </div>
+    </main>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="/lib/supabase.js"></script>
+    <script src="/supabase-config.js"></script>
+    <script>
+    (function () {
+        const $ = (id) => document.getElementById(id);
+        const MODI = {
+            'flag-to-name': 'Klassisch',
+            'name-to-flag': 'Umgedreht',
+            'map-mode': 'Karte',
+            'time-attack': 'Time Attack',
+            'endless': 'Endless'
+        };
+        const MONATE = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+        const zahl = (n) => Number(n || 0).toLocaleString('de-DE');
+
+        function status(html) {
+            $('status').innerHTML = html;
+            $('status').style.display = 'block';
+            $('dashboard').style.display = 'none';
+        }
+
+        // ---------- Datum-Helfer ----------
+        function iso(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const t = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${t}`;
+        }
+        function addDays(d, n) {
+            const x = new Date(d);
+            x.setDate(x.getDate() + n);
+            return x;
+        }
+        function dauerText(sek) {
+            if (!sek) return '–';
+            const s = Math.round(sek);
+            if (s < 60) return `${s} s`;
+            const m = Math.floor(s / 60);
+            const r = s % 60;
+            return m < 60 ? `${m}:${String(r).padStart(2, '0')} min` : `${Math.floor(m / 60)} h ${m % 60} min`;
+        }
+
+        // ---------- Tooltip ----------
+        const tip = $('tooltip');
+        function zeigeTip(e, text) {
+            tip.textContent = text;
+            tip.style.left = e.clientX + 'px';
+            tip.style.top = e.clientY + 'px';
+            tip.style.opacity = '1';
+        }
+        function versteckeTip() { tip.style.opacity = '0'; }
+
+        // ---------- Säulendiagramm (eine Reihe) ----------
+        function saeulen(container, punkte, einheit) {
+            // Breite = echte Breite des Kastens, damit die Schrift überall gleich groß bleibt
+            const W = Math.max(280, Math.round(container.clientWidth || 640)), H = 220, L = 38, R = 6, T = 10, B = 26;
+            const max = Math.max(1, ...punkte.map(p => p.value));
+            // "schöne" Achsen-Schritte (1, 2, 2.5, 5, 10 …), damit die Zahlen glatt sind
+            const roh = max / 4;
+            const mag = Math.pow(10, Math.floor(Math.log10(roh)));
+            const schritt = Math.max(1, [1, 2, 2.5, 5, 10].map(f => f * mag).find(x => x >= roh));
+            const top = Math.ceil(schritt) * 4;
+            const n = punkte.length;
+            const breite = (W - L - R) / n;
+            const balken = Math.max(2, Math.min(28, breite - 2));
+            let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${einheit}">`;
+
+            for (let i = 0; i <= 4; i++) {
+                const y = T + (H - T - B) * (1 - i / 4);
+                svg += `<line class="gridline" x1="${L}" x2="${W - R}" y1="${y}" y2="${y}"/>`;
+                svg += `<text x="${L - 6}" y="${y + 4}" text-anchor="end">${zahl(Math.round(top * i / 4))}</text>`;
+            }
+
+            const jedes = Math.ceil(n / Math.max(4, Math.floor(W / 64))); // Beschriftungen passend zur Breite
+            punkte.forEach((p, i) => {
+                const x = L + i * breite + (breite - balken) / 2;
+                const h = (H - T - B) * (p.value / top);
+                const y = H - B - h;
+                const r = Math.min(4, balken / 2, h);
+                // Hit-Fläche über die ganze Spalte
+                svg += `<rect class="hit" data-i="${i}" x="${L + i * breite}" y="${T}" width="${breite}" height="${H - T - B}"/>`;
+                if (p.value > 0) {
+                    // oben abgerundet, unten gerade an der Grundlinie
+                    svg += `<path class="bar" data-i="${i}" d="M${x},${H - B} V${y + r} Q${x},${y} ${x + r},${y} H${x + balken - r} Q${x + balken},${y} ${x + balken},${y + r} V${H - B} Z"/>`;
+                }
+                if (i % jedes === 0 || i === n - 1) {
+                    svg += `<text x="${x + balken / 2}" y="${H - 8}" text-anchor="middle">${p.short}</text>`;
+                }
+            });
+            svg += '</svg>';
+            container.innerHTML = svg;
+
+            const bars = container.querySelectorAll('.bar');
+            container.querySelectorAll('.hit').forEach(hit => {
+                const i = +hit.dataset.i;
+                hit.addEventListener('mousemove', (e) => {
+                    bars.forEach(b => b.classList.toggle('hover', +b.dataset.i === i));
+                    zeigeTip(e, `${punkte[i].long}: ${zahl(punkte[i].value)} ${einheit}`);
+                });
+                hit.addEventListener('mouseleave', () => {
+                    bars.forEach(b => b.classList.remove('hover'));
+                    versteckeTip();
+                });
+            });
+        }
+
+        // ---------- Waagerechte Balken ----------
+        function waagerecht(container, punkte) {
+            const max = Math.max(1, ...punkte.map(p => p.value));
+            const W = Math.max(280, Math.round(container.clientWidth || 420)), zeile = 34, L = 92, R = 44;
+            const H = punkte.length * zeile;
+            let svg = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+            punkte.forEach((p, i) => {
+                const y = i * zeile + 8;
+                const w = Math.max(p.value > 0 ? 4 : 0, (W - L - R) * p.value / max);
+                svg += `<text x="${L - 8}" y="${y + 13}" text-anchor="end">${p.label}</text>`;
+                svg += `<rect class="hit" data-i="${i}" x="0" y="${i * zeile}" width="${W}" height="${zeile}"/>`;
+                if (w > 0) {
+                    const r = Math.min(4, w);
+                    svg += `<path class="bar" data-i="${i}" d="M${L},${y} H${L + w - r} Q${L + w},${y} ${L + w},${y + r} V${y + 18 - r} Q${L + w},${y + 18} ${L + w - r},${y + 18} H${L} Z"/>`;
+                }
+                svg += `<text class="val" x="${L + w + 6}" y="${y + 13}">${zahl(p.value)}</text>`;
+            });
+            svg += '</svg>';
+            container.innerHTML = svg;
+
+            const bars = container.querySelectorAll('.bar');
+            container.querySelectorAll('.hit').forEach(hit => {
+                const i = +hit.dataset.i;
+                hit.addEventListener('mousemove', (e) => {
+                    bars.forEach(b => b.classList.toggle('hover', +b.dataset.i === i));
+                    zeigeTip(e, `${punkte[i].label}: ${zahl(punkte[i].value)} Runden`);
+                });
+                hit.addEventListener('mouseleave', () => {
+                    bars.forEach(b => b.classList.remove('hover'));
+                    versteckeTip();
+                });
+            });
+        }
+
+        // ---------- Daten in Tage bzw. Monate einteilen ----------
+        function zeitreihe(von, bis, nachMonat, werte) {
+            const punkte = [];
+            if (nachMonat) {
+                let d = new Date(von.getFullYear(), von.getMonth(), 1);
+                while (d <= bis) {
+                    const key = iso(d).slice(0, 7);
+                    punkte.push({ key, short: MONATE[d.getMonth()], long: `${MONATE[d.getMonth()]} ${d.getFullYear()}`, value: 0 });
+                    d = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+                }
+                const map = Object.fromEntries(punkte.map(p => [p.key, p]));
+                werte.forEach(w => { const p = map[w.day.slice(0, 7)]; if (p) p.value += w.value; });
+            } else {
+                for (let d = new Date(von); d <= bis; d = addDays(d, 1)) {
+                    punkte.push({ key: iso(d), short: `${d.getDate()}.${d.getMonth() + 1}.`, long: d.toLocaleDateString('de-DE'), value: 0 });
+                }
+                const map = Object.fromEntries(punkte.map(p => [p.key, p]));
+                werte.forEach(w => { const p = map[w.day]; if (p) p.value += w.value; });
+            }
+            return punkte;
+        }
+
+        // ---------- Laden & Anzeigen ----------
+        const cfg = window.SUPABASE_CONFIG || {};
+        if (!window.supabase || !cfg.url) {
+            status('Die Verbindung zur Datenbank ist nicht eingerichtet.');
+            return;
+        }
+        const sb = window.supabase.createClient(cfg.url, cfg.anonKey, {
+            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+        });
+
+        let firstDay = null;
+
+        async function anzeigen(range) {
+            const heute = new Date();
+            heute.setHours(0, 0, 0, 0);
+            let von;
+            if (range === 'all') {
+                von = firstDay ? new Date(firstDay + 'T00:00:00') : addDays(heute, -29);
+            } else {
+                von = addDays(heute, -(parseInt(range, 10) - 1));
+            }
+            const nachMonat = range === '365' || (range === 'all' && (heute - von) / 86400000 > 62);
+
+            const { data, error } = await sb.rpc('get_stats', { p_from: iso(von), p_to: iso(heute) });
+            if (error) {
+                status('Die Statistik konnte nicht geladen werden: ' + (error.message || 'unbekannter Fehler'));
+                return;
+            }
+            firstDay = data.first_day || firstDay;
+            $('status').style.display = 'none';
+            $('dashboard').style.display = 'block';
+
+            const daily = data.daily || [];
+            const visits = daily.reduce((s, d) => s + d.visits, 0);
+            const sek = daily.reduce((s, d) => s + Number(d.total_seconds), 0);
+            const samples = daily.reduce((s, d) => s + d.duration_samples, 0);
+            const mobile = daily.reduce((s, d) => s + d.mobile, 0);
+            const desktop = daily.reduce((s, d) => s + d.desktop, 0);
+            const games = (data.games || []).reduce((s, g) => s + g.plays, 0);
+            const signups = (data.signups || []).reduce((s, d) => s + d.count, 0);
+            const tage = Math.max(1, Math.round((heute - von) / 86400000) + 1);
+
+            $('t-visits').textContent = zahl(visits);
+            $('t-visits-hint').textContent = `Ø ${zahl(Math.round(visits / tage * 10) / 10)} pro Tag`;
+            $('t-duration').textContent = samples ? dauerText(sek / samples) : '–';
+            $('t-games').textContent = zahl(games);
+            $('t-games-hint').textContent = visits ? `${zahl(Math.round(games / visits * 10) / 10)} pro Besuch` : '';
+            $('t-signups').textContent = zahl(signups);
+            $('t-users-total').textContent = `${zahl(data.users_total)} insgesamt · ${zahl(data.ranked_total)} in der Rangliste`;
+            const geraete = mobile + desktop;
+            $('t-mobile').textContent = geraete ? `${Math.round(mobile / geraete * 100)} %` : '–';
+            $('t-desktop').textContent = geraete ? `PC: ${Math.round(desktop / geraete * 100)} %` : '';
+
+            const einheit = nachMonat ? 'pro Monat' : 'pro Tag';
+            $('visits-sub').textContent = einheit;
+            $('games-sub').textContent = einheit;
+
+            const besuchePunkte = zeitreihe(von, heute, nachMonat, daily.map(d => ({ day: d.day, value: d.visits })));
+            saeulen($('chart-visits'), besuchePunkte, 'Besuche');
+            saeulen($('chart-games'), zeitreihe(von, heute, nachMonat, (data.games_daily || []).map(d => ({ day: d.day, value: d.plays }))), 'Runden');
+
+            // Tabelle
+            let tab = `<tr><th>${nachMonat ? 'Monat' : 'Tag'}</th><th>Besuche</th></tr>`;
+            besuchePunkte.slice().reverse().forEach(p => { tab += `<tr><td>${p.long}</td><td>${zahl(p.value)}</td></tr>`; });
+            $('table-visits').innerHTML = tab;
+
+            // Modi
+            const proModus = Object.keys(MODI).map(m => ({
+                label: MODI[m],
+                value: (data.games || []).filter(g => g.mode === m).reduce((s, g) => s + g.plays, 0)
+            }));
+            waagerecht($('chart-modes'), proModus);
+
+            // Level
+            const proLevel = [1, 2, 3, 4, 5].map(l => ({
+                label: `Level ${l}`,
+                value: (data.games || []).filter(g => g.level === l).reduce((s, g) => s + g.plays, 0)
+            }));
+            waagerecht($('chart-levels'), proLevel);
+
+            $('first-day').textContent = firstDay ? `Daten seit ${new Date(firstDay + 'T00:00:00').toLocaleDateString('de-DE')}.` : '';
+        }
+
+        let letzterBereich = '30';
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if ($('dashboard').style.display !== 'none') anzeigen(letzterBereich);
+            }, 250);
+        });
+
+        async function start() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) {
+                status('Bitte melde dich zuerst auf <a href="/">Flaggen-Raten.de</a> mit deinem Account an und öffne dann diese Seite erneut.');
+                return;
+            }
+            const { data: istAdmin, error } = await sb.rpc('is_stats_admin');
+            if (error) {
+                status('Die Statistik ist noch nicht eingerichtet (SQL-Datei in Supabase ausführen).');
+                return;
+            }
+            if (!istAdmin) {
+                status('Diese Seite ist nur für den Betreiber sichtbar.');
+                return;
+            }
+
+            const buttons = document.querySelectorAll('#filters button');
+            buttons.forEach(b => b.addEventListener('click', () => {
+                buttons.forEach(x => x.classList.toggle('active', x === b));
+                letzterBereich = b.dataset.range;
+                anzeigen(b.dataset.range);
+            }));
+            anzeigen('30');
+        }
+
+        start();
+    })();
+    </script>
+</body>
+</html>

@@ -1048,6 +1048,9 @@ function startQuiz(levelId, mode = 'flag-to-name') {
     stopRunTimers();
     gameState.runId++;
     gameState.timeAttackPaused = false;
+
+    // Gespielte Runde für die Statistik zählen (anonym)
+    if (window.FlaggenStats) window.FlaggenStats.runde(mode, levelId);
     gameState.activeLevel = levelId;
     gameState.activeMode = mode;
 
