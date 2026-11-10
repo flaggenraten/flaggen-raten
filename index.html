@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flaggen-Raten.de – Flaggen-Quiz mit allen 195 Ländern</title>
+    <meta name="description" content="Kostenloses Flaggen-Quiz auf Deutsch: Errate alle 195 Länderflaggen der Welt in 5 Schwierigkeitsstufen, im Kartenmodus, im Time Attack oder im Endless-Modus mit Online-Rangliste.">
+    <meta name="keywords" content="Flaggen raten, Flaggen Quiz, Länderflaggen, Flaggen lernen, Geografie Quiz, Länder Quiz, Weltkarte Quiz">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0b1329">
+    <link rel="canonical" href="https://flaggen-raten.de/">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Vorschau beim Teilen (WhatsApp, Discord, Instagram usw.) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Flaggen-Raten.de">
+    <meta property="og:title" content="Flaggen-Raten.de – Wie viele Flaggen kennst du?">
+    <meta property="og:description" content="Errate alle 195 Länderflaggen der Welt – kostenlos, mit Kartenmodus und Online-Rangliste.">
+    <meta property="og:url" content="https://flaggen-raten.de/">
+    <meta property="og:image" content="https://flaggen-raten.de/og-image.png">
+    <meta property="og:locale" content="de_DE">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Strukturierte Daten für Suchmaschinen -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Flaggen-Raten.de",
+        "url": "https://flaggen-raten.de/",
+        "description": "Kostenloses Flaggen-Quiz mit allen 195 Ländern der Welt, Kartenmodus und Online-Rangliste.",
+        "applicationCategory": "GameApplication",
+        "genre": "Quiz",
+        "inLanguage": "de",
+        "operatingSystem": "Alle (Webbrowser)",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+    }
+    </script>
+    <script>
+        // Design (hell/dunkel) sofort setzen, damit die Seite nicht kurz falsch aufblitzt
+        (function () {
+            try {
+                var s = JSON.parse(localStorage.getItem('flaggen_settings') || '{}');
+                var t = s.theme || 'dark';
+                if (t === 'auto') t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="fonts/fonts.css?v=202611101722">
+    <link rel="stylesheet" href="style.css?v=202611101722">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-left" id="nav-brand">
+            <span class="brand-emoji">🌍</span>
+            <span class="brand-text">Flaggen-Raten.de</span>
+        </div>
+
+        <div class="nav-center">
+            <button class="nav-home-btn" id="nav-home-btn">
+                <span class="home-icon">🏠</span>
+                <span class="home-text">Home</span>
+            </button>
+        </div>
+
+        <div class="nav-right">
+            <button class="nav-auth-btn" id="btn-open-login">
+                <span class="auth-btn-icon">👤</span>
+                <span class="auth-btn-long">Login / Registrieren</span>
+                <span class="auth-btn-short">Login</span>
+            </button>
+            <button class="nav-profile-btn" id="btn-open-profile" style="display: none;" title="Profil">
+                <span class="profile-avatar" id="nav-profile-avatar">?</span>
+                <span class="profile-nav-name" id="nav-profile-name">Profil</span>
+            </button>
+            <button class="nav-action-btn" id="btn-open-settings" title="Einstellungen">
+                <span class="action-icon">⚙️</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-container">
+
+        <!-- ================= VIEW 1: HOME VIEW (LEVEL SELECTION) ================= -->
+        <section id="view-home" class="view active">
+            <div class="home-hero">
+                <div class="hero-badge">
+                    <span>🌟 Das interaktive Geografie-Quiz</span>
+                </div>
+                <div class="quiz-title-wrapper">
+                    <h1 class="quiz-title">Errate die Flaggen der Welt</h1>
+                </div>
+                <p class="hero-subtitle">Wähle deinen Schwierigkeitsgrad, teste dein Wissen in verschiedenen Spielmodi und werde zum Weltmeister!</p>
+
+                <!-- Level Selection Grid -->
+                <div class="level-selection-grid">
+                    <button class="level-card-btn" data-level="1">
+                        <div class="level-card-top">
+                            <span class="level-number">01</span>
+                            <span class="level-badge easy">Sehr Einfach</span>
+                        </div>
+                        <div class="level-card-content">
+                            <h3>Level 1</h3>
+                            <p>Die bekanntesten Flaggen der Welt</p>
+                        </div>
+                        <div class="level-card-footer">
+                            <span class="progress-label-home">Gesamtfortschritt</span>
+                            <span class="level-progress-preview" id="preview-progress-1">0%</span>
+                        </div>
+                    </button>
+
+                    <button class="level-card-btn" data-level="2">
+                        <div class="level-card-top">
+                            <span class="level-number">02</span>
+                            <span class="level-badge normal">Einfach</span>
+                        </div>
+                        <div class="level-card-content">
+                            <h3>Level 2</h3>
+                            <p>Bekannte Länder aller Kontinente</p>
+                        </div>
+                        <div class="level-card-footer">
+                            <span class="progress-label-home">Gesamtfortschritt</span>
+                            <span class="level-progress-preview" id="preview-progress-2">0%</span>
+                        </div>
+                    </button>
+
+                    <button class="level-card-btn" data-level="3">
+                        <div class="level-card-top">
+                            <span class="level-number">03</span>
+                            <span class="level-badge medium">Mittel</span>
+                        </div>
+                        <div class="level-card-content">
+                            <h3>Level 3</h3>
+                            <p>Balkan, Asien, Nahost & Karibik</p>
+                        </div>
+                        <div class="level-card-footer">
+                            <span class="progress-label-home">Gesamtfortschritt</span>
+                            <span class="level-progress-preview" id="preview-progress-3">0%</span>
+                        </div>
+                    </button>
+
+                    <button class="level-card-btn" data-level="4">
+                        <div class="level-card-top">
+                            <span class="level-number">04</span>
+                            <span class="level-badge hard">Schwer</span>
+                        </div>
+                        <div class="level-card-content">
+                            <h3>Level 4</h3>
+                            <p>Afrika, Zentralasien & Pazifik</p>
+                        </div>
+                        <div class="level-card-footer">
+                            <span class="progress-label-home">Gesamtfortschritt</span>
+                            <span class="level-progress-preview" id="preview-progress-4">0%</span>
+                        </div>
+                    </button>
+
+                    <button class="level-card-btn" data-level="5">
+                        <div class="level-card-top">
+                            <span class="level-number">05</span>
+                            <span class="level-badge extreme">Extrem</span>
+                        </div>
+                        <div class="level-card-content">
+                            <h3>Level 5</h3>
+                            <p>Kleinstaaten & Inselnationen</p>
+                        </div>
+                        <div class="level-card-footer">
+                            <span class="progress-label-home">Gesamtfortschritt</span>
+                            <span class="level-progress-preview" id="preview-progress-5">0%</span>
+                        </div>
+                    </button>
+
+                    <button class="level-card-btn endless-card" id="btn-open-endless">
+                        <div class="level-card-top">
+                            <span class="level-number">∞</span>
+                            <span class="level-badge endless">Endless</span>
+                        </div>
+                        <div class="level-card-content">
+                            <h3>Endless</h3>
+                            <p>Endlos Flaggen raten – ein Fehler und es ist vorbei. Mit Account &amp; Rangliste.</p>
+                        </div>
+                        <div class="level-card-footer">
+                            <span class="progress-label-home">Highscore</span>
+                            <span class="level-progress-preview" id="preview-endless-highscore">0</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 2: LEVEL OVERVIEW & MODE SELECTION ================= -->
+        <section id="view-level-detail" class="view">
+            <div class="level-detail-header">
+                <div class="level-badge-tag" id="level-detail-tag">Level 1 • 39 Länder</div>
+                <h2 class="level-heading" id="level-detail-title">Level 1</h2>
+                <p class="level-subtext" id="level-detail-desc">Die bekanntesten Flaggen der Welt zum Einstieg.</p>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="progress-card">
+                <div class="progress-info-row">
+                    <span class="progress-label">Gesamtfortschritt (alle 3 Haupt-Modi)</span>
+                    <span class="progress-percent" id="level-progress-percent">0%</span>
+                </div>
+                <div class="progress-track progress-track-split">
+                    <div class="progress-seg seg-flag-to-name" id="seg-flag-to-name"></div>
+                    <div class="progress-seg seg-name-to-flag" id="seg-name-to-flag"></div>
+                    <div class="progress-seg seg-map-mode" id="seg-map-mode"></div>
+                </div>
+                <div class="progress-legend">
+                    <span class="legend-item"><i class="legend-dot seg-flag-to-name"></i>Klassisch <strong id="legend-flag-to-name">0 / 33%</strong></span>
+                    <span class="legend-item"><i class="legend-dot seg-name-to-flag"></i>Umgedreht <strong id="legend-name-to-flag">0 / 33%</strong></span>
+                    <span class="legend-item"><i class="legend-dot seg-map-mode"></i>Karte <strong id="legend-map-mode">0 / 33%</strong></span>
+                </div>
+                <p class="progress-hint">Jeder Modus zählt ein Drittel – 100% in allen drei Modi ergibt 100% Gesamtfortschritt.</p>
+            </div>
+
+            <!-- Game Mode Selection for this Level with Individual Progress -->
+            <div class="mode-selection-container">
+                <h3 class="subsection-title">🎮 Spielmodus wählen & Status:</h3>
+                <div class="mode-pills-grid">
+                    <button class="mode-pill-btn active" data-mode="flag-to-name">
+                        <span class="pill-icon">🚩</span>
+                        <div class="pill-text">
+                            <strong>Klassisch</strong>
+                            <span>Flagge → Land</span>
+                        </div>
+                        <span class="mode-pill-score" id="score-pill-flag-to-name">0%</span>
+                    </button>
+
+                    <button class="mode-pill-btn" data-mode="name-to-flag">
+                        <span class="pill-icon">🔄</span>
+                        <div class="pill-text">
+                            <strong>Umgedreht</strong>
+                            <span>Land → 4 Flaggen</span>
+                        </div>
+                        <span class="mode-pill-score" id="score-pill-name-to-flag">0%</span>
+                    </button>
+
+                    <button class="mode-pill-btn" data-mode="map-mode">
+                        <span class="pill-icon">🗺️</span>
+                        <div class="pill-text">
+                            <strong>Karten-Detektiv</strong>
+                            <span>Echte Kartenumrisse</span>
+                        </div>
+                        <span class="mode-pill-score" id="score-pill-map-mode">0%</span>
+                    </button>
+
+                    <button class="mode-pill-btn" data-mode="time-attack">
+                        <span class="pill-icon">⏱️</span>
+                        <div class="pill-text">
+                            <strong>Time Attack</strong>
+                            <span>60 Sekunden, Fehler −3 s</span>
+                        </div>
+                        <span class="mode-pill-score" id="score-pill-time-attack">—</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="level-actions">
+                <button class="btn btn-primary btn-large" id="btn-start-level">
+                    <span class="btn-icon">▶</span> Level starten
+                </button>
+                <button class="btn btn-secondary" id="btn-back-to-home">
+                    ← Zurück zur Level-Übersicht
+                </button>
+            </div>
+
+            <!-- Countries included in this level -->
+            <div class="countries-list-card">
+                <div class="countries-card-header">
+                    <h3>Enthaltene Länder (<span id="countries-list-count">39</span>)</h3>
+                    <input type="text" id="country-search-input" class="search-input" placeholder="Land suchen...">
+                </div>
+                <div class="countries-grid" id="level-countries-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VIEW: ENDLESS ================= -->
+        <section id="view-endless" class="view">
+            <div class="level-detail-header">
+                <div class="level-badge-tag endless-tag">∞ Endless • ohne Ende</div>
+                <h2 class="level-heading">Endless</h2>
+                <p class="level-subtext">Alle Länder der Welt in zufälliger Reihenfolge. Wie weit kommst du?</p>
+            </div>
+
+            <div class="endless-score-card">
+                <span class="endless-score-label">🏆 Dein Highscore</span>
+                <span class="endless-score-value" id="endless-highscore-value">0</span>
+                <span class="endless-score-sub">Flaggen am Stück richtig</span>
+            </div>
+
+            <div class="endless-rules">
+                <h3 class="subsection-title">So funktioniert's</h3>
+                <ul>
+                    <li><span>🌍</span>Alle 195 Länder kommen in zufälliger Reihenfolge – danach wird neu gemischt und es geht endlos weiter</li>
+                    <li><span>🚩</span>Du siehst eine Flagge und wählst das richtige Land</li>
+                    <li><span>💀</span>Ein einziger Fehler – und das Spiel ist vorbei</li>
+                    <li><span>📈</span>Jede richtige Antwort gibt 1 Punkt – knack deinen Highscore!</li>
+                </ul>
+            </div>
+
+            <div class="level-actions">
+                <p class="endless-login-hint" id="endless-login-hint" style="display: none;">
+                    🔒 Für Endless brauchst du einen kostenlosen Account, damit dein Score in der Rangliste zählt.
+                </p>
+                <button class="btn btn-primary btn-large" id="btn-start-endless">
+                    <span class="btn-icon">▶</span> Endless starten
+                </button>
+                <button class="btn btn-secondary" id="btn-endless-back">
+                    ← Zurück zur Level-Übersicht
+                </button>
+            </div>
+
+            <div class="rangliste-card" id="rangliste-card">
+                <div class="rangliste-head">
+                    <h3 class="subsection-title">🏆 Rangliste – Top 30</h3>
+                    <button class="rangliste-reload" id="btn-rangliste-reload" title="Neu laden">⟳</button>
+                </div>
+                <p class="rangliste-status" id="rangliste-status" style="display: none;"></p>
+                <ol class="rangliste-liste" id="rangliste-liste"></ol>
+                <div class="rangliste-footer" id="rangliste-footer"></div>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 3: QUIZ VIEW ================= -->
+        <section id="view-quiz" class="view">
+            <div class="quiz-topbar">
+                <div class="quiz-meta-left">
+                    <span class="quiz-level-pill" id="quiz-level-indicator">Level 1</span>
+                    <span class="quiz-counter" id="quiz-question-counter">Flagge 1 / 39</span>
+                </div>
+
+                <!-- Timer or Lives -->
+                <div class="quiz-hud-right">
+                    <div class="quiz-timer-box" id="quiz-timer-box" style="display: none;">
+                        ⏱️ <span id="quiz-timer-countdown">60</span>s
+                    </div>
+                    <div class="quiz-lives" id="quiz-lives-container">
+                        <span class="life-heart active" id="heart-1">❤️</span>
+                        <span class="life-heart active" id="heart-2">❤️</span>
+                        <span class="life-heart active" id="heart-3">❤️</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Progress Bar -->
+            <div class="quiz-progress-track" id="quiz-progress-track-wrapper">
+                <div class="quiz-progress-fill" id="quiz-run-progress" style="width: 0%;"></div>
+            </div>
+
+            <!-- Sub-View A: Classic Flag Stage -->
+            <div class="quiz-stage-variant" id="stage-flag-to-name">
+                <div class="flag-stage">
+                    <div class="flag-wrapper" id="flag-wrapper">
+                        <img id="current-flag-img" src="" alt="Flagge zum Erraten">
+                    </div>
+                    <div class="hint-feedback" id="hint-feedback-1">Wähle das richtige Land:</div>
+                </div>
+                <div class="quiz-options-grid" id="quiz-options-container"></div>
+            </div>
+
+            <!-- Sub-View B: Name to Flag Stage -->
+            <div class="quiz-stage-variant" id="stage-name-to-flag" style="display: none;">
+                <div class="name-stage-card">
+                    <span class="name-stage-label">Gesuchtes Land:</span>
+                    <h2 class="target-country-name" id="target-country-name">Deutschland</h2>
+                    <div class="hint-feedback" id="hint-feedback-2">Welche Flagge gehört dazu?</div>
+                </div>
+                <div class="flag-options-grid" id="flag-options-container"></div>
+            </div>
+
+            <!-- Sub-View C: Karten-Detektiv (Karte wird von karte.js gezeichnet) -->
+            <div class="quiz-stage-variant" id="stage-map-mode" style="display: none;">
+                <div class="map-stage-card">
+                    <div class="map-outline-wrapper" id="map-outline-wrapper">
+                        <!-- Karte wird von karte.js gezeichnet -->
+                    </div>
+                    <div class="hint-feedback" id="hint-feedback-3">Welches Land ist auf der Karte markiert?</div>
+                </div>
+                <div class="quiz-options-grid" id="map-options-container"></div>
+            </div>
+
+            <!-- Abort Quiz Button -->
+            <div class="quiz-footer-actions">
+                <button class="btn btn-ghost" id="btn-quit-quiz">Quiz abbrechen</button>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 4: RESULT / GAME OVER VIEW ================= -->
+        <section id="view-result" class="view">
+            <div class="result-card">
+                <div class="result-icon" id="result-status-icon">🎉</div>
+                <h2 class="result-title" id="result-status-title">Großartig!</h2>
+                <p class="result-subtitle" id="result-status-subtitle">Du hast das Quiz erfolgreich gemeistert.</p>
+
+                <!-- Result Progress Box -->
+                <div class="result-stats-box">
+                    <div class="result-metric">
+                        <span class="metric-label">Erreichte Punkte / Flaggen</span>
+                        <span class="metric-value" id="result-score-text">39 / 39</span>
+                    </div>
+
+                    <div class="progress-track" id="result-progress-track-box">
+                        <div class="progress-fill" id="result-progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="result-percent-badge" id="result-percent-badge">100%</div>
+
+                    <div class="result-rank-note" id="result-rank-note" style="display: none;"></div>
+
+                    <div class="result-record-row" id="result-record-container">
+                        <span id="result-record-label">🏆 Gesamtfortschritt (Level):</span>
+                        <strong id="result-record-text">100%</strong>
+                    </div>
+                </div>
+
+                <!-- Result Action Buttons -->
+                <div class="result-actions">
+                    <button class="btn btn-primary btn-large" id="btn-retry-level">
+                        🔄 Noch einmal spielen
+                    </button>
+                    <button class="btn btn-secondary" id="btn-result-to-menu">
+                        📋 Zur Level-Übersicht
+                    </button>
+                    <button class="btn btn-ghost" id="btn-result-to-home">
+                        🏠 Hauptmenü
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Kurzer Text über die Seite (hilft auch Suchmaschinen) -->
+    <section class="seo-info" id="seo-info">
+        <h2>Flaggen raten und lernen – kostenlos</h2>
+        <p>Flaggen-Raten.de ist ein kostenloses Flaggen-Quiz auf Deutsch. Lerne alle 195 Länderflaggen der Welt – von Deutschland und Frankreich bis Tuvalu und Bhutan. Die Länder sind in fünf Level von „Sehr einfach“ bis „Extrem“ eingeteilt.</p>
+        <p>Spiele klassisch (Flagge erkennen), umgedreht (zum Land die richtige Flagge finden), im Kartenmodus (Land auf der Weltkarte erkennen), im Time Attack gegen die Uhr oder im Endless-Modus mit Online-Rangliste. Ohne Werbung und ohne Anmeldung – nur für Endless brauchst du einen kostenlosen Account.</p>
+    </section>
+
+    <!-- Footer with legal text buttons -->
+    <footer class="app-footer">
+        <div class="footer-links">
+            <button class="text-link-btn" id="btn-open-datenschutz">Datenschutz</button>
+            <span class="footer-divider">•</span>
+            <button class="text-link-btn" id="btn-open-impressum">Impressum</button>
+        </div>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+    <div class="modal-overlay" id="modal-overlay">
+        <!-- Datenschutz Modal -->
+        <div class="modal-dialog" id="modal-datenschutz">
+            <div class="modal-header">
+                <h3>Datenschutzerklärung</h3>
+                <button class="modal-close" data-close-modal="datenschutz">&times;</button>
+            </div>
+            <div class="modal-body legal-text">
+                <!-- ENTWURF: Alle gelb markierten Platzhalter vor dem Veröffentlichen ausfüllen! -->
+                <p><strong>1. Verantwortlicher</strong></p>
+                <p>Emil Böckmann<br>Roonstraße 20<br>38102 Braunschweig<br>E-Mail: <a href="mailto:support@flaggen-raten.de" class="auth-link">support@flaggen-raten.de</a></p>
+
+                <p><strong>2. Überblick</strong></p>
+                <p>Flaggen-Raten.de ist ein kostenloses Flaggen-Quiz. Du kannst es komplett ohne Account spielen. Wir verwenden keine Werbung, kein Tracking und keine Analysedienste. Schriftarten, Flaggen und Karten werden direkt von unserer Website geladen, nicht von fremden Servern.</p>
+
+                <p><strong>3. Hosting</strong></p>
+                <p>Diese Website wird bei GitHub Pages (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA) gehostet. Beim Aufruf der Seite verarbeitet der Hoster technisch notwendige Daten (z. B. IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browser), um die Website auszuliefern und vor Angriffen zu schützen. Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren und funktionierenden Betrieb (Art. 6 Abs. 1 lit. f DSGVO). Dabei können Daten in die USA übermittelt werden; GitHub stützt solche Übermittlungen auf das EU-US Data Privacy Framework bzw. auf EU-Standardvertragsklauseln.</p>
+
+                <p><strong>4. Speicherung in deinem Browser (keine Cookies)</strong></p>
+                <p>Wir speichern im lokalen Speicher deines Browsers (localStorage) deinen Spielfortschritt, deinen Endless-Highscore, deine Sound-Einstellung und – falls du angemeldet bist – deine Login-Sitzung. Diese Daten bleiben auf deinem Gerät und sind für die von dir gewünschten Funktionen unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Deshalb brauchen wir keine Einwilligung und keinen Cookie-Banner. Du kannst die Daten jederzeit über die Einstellungen deines Browsers löschen.</p>
+
+                <p><strong>5. Benutzerkonto (freiwillig)</strong></p>
+                <p>Wenn du einen Account erstellst, verarbeiten wir: deine E-Mail-Adresse, dein Passwort (nur verschlüsselt gespeichert), deinen Anzeigenamen, deinen besten Endless-Score sowie Zeitpunkte von Registrierung und Anmeldung. Zweck ist die Bereitstellung deines Accounts und der Rangliste. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Nutzungsvertrag).</p>
+                <p>Dein <strong>Anzeigename und dein bester Endless-Score sind öffentlich sichtbar</strong> (Rangliste). Verwende bitte nicht deinen echten vollen Namen. Wir speichern deine Daten, solange dein Account besteht. Du kannst deinen Account jederzeit selbst im Profil-Menü löschen. Dabei werden alle zugehörigen Daten gelöscht.</p>
+
+                <p><strong>6. Dienstleister</strong></p>
+                <p><strong>Supabase</strong> (Supabase Pte. Ltd., Singapur, Kontakt: privacy@supabase.com): Speicherung der Accounts, der Anzeigenamen und der Rangliste. Unsere Datenbank liegt in Frankfurt am Main (EU). Mit Supabase besteht ein Vertrag zur Auftragsverarbeitung (Art. 28 DSGVO). Soweit Daten in die USA oder nach Singapur übermittelt werden, geschieht das auf Grundlage von EU-Standardvertragsklauseln (Art. 46 DSGVO).</p>
+                <p><strong>E-Mails</strong>: Beim Registrieren verschicken wir keine Bestätigungs-E-Mail. Nur wenn du „Passwort vergessen“ nutzt, bekommst du einen Code per E-Mail. Diese E-Mail wird über Supabase versendet.</p>
+
+                <p><strong>7. Deine Rechte</strong></p>
+                <p>Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21). Schreib uns dafür einfach an die oben genannte E-Mail-Adresse. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren, z. B. bei der Landesbeauftragten für den Datenschutz Niedersachsen.</p>
+
+                <p class="legal-stand">Stand: 10. November 2026</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close-modal="datenschutz">Schließen</button>
+            </div>
+        </div>
+
+        <!-- Impressum Modal -->
+        <div class="modal-dialog" id="modal-impressum">
+            <div class="modal-header">
+                <h3>Impressum</h3>
+                <button class="modal-close" data-close-modal="impressum">&times;</button>
+            </div>
+            <div class="modal-body legal-text">
+                <!-- ENTWURF: Alle gelb markierten Platzhalter vor dem Veröffentlichen ausfüllen! -->
+                <p><strong>Angaben gemäß § 5 DDG</strong></p>
+                <p>Emil Böckmann<br>Roonstraße 20<br>38102 Braunschweig<br>Deutschland</p>
+
+                <p><strong>Kontakt</strong></p>
+                <p>E-Mail: <a href="mailto:support@flaggen-raten.de" class="auth-link">support@flaggen-raten.de</a></p>
+
+                <p><strong>Verantwortlich für den Inhalt</strong></p>
+                <p>Emil Böckmann, Roonstraße 20, 38102 Braunschweig</p>
+
+                <p><strong>Quellen & Lizenzen</strong></p>
+                <p>• Flaggen: gemeinfrei (Public Domain), Dateien von Wikimedia Commons über das Projekt „country-flags“ von Hampus Nilsson.<br>
+                • Kartendaten: Made with Natural Earth (gemeinfrei), aufbereitet mit world-atlas.<br>
+                • Schriftart: Plus Jakarta Sans, SIL Open Font License 1.1.<br>
+                • Programm-Bibliotheken: d3-geo, d3-array, topojson-client (ISC-Lizenz), supabase-js (MIT-Lizenz).<br>
+                Die vollständigen Lizenztexte stehen in der Datei <code>LIZENZEN.txt</code>.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close-modal="impressum">Schließen</button>
+            </div>
+        </div>
+
+
+        <!-- Login / Registrieren Modal -->
+        <div class="modal-dialog auth-dialog" id="modal-auth">
+            <div class="modal-header">
+                <h3 id="auth-title">Anmelden</h3>
+                <button class="modal-close" id="auth-close-btn" data-close-modal="auth">&times;</button>
+            </div>
+
+            <div class="auth-config-notice" id="auth-config-notice" style="display: none;">
+                ⚙️ Der Login ist noch nicht eingerichtet. Trage deine Supabase-Daten in <code>supabase-config.js</code> ein.
+            </div>
+
+            <div class="auth-tabs" id="auth-tabs">
+                <button class="auth-tab active" data-auth-tab="login">Anmelden</button>
+                <button class="auth-tab" data-auth-tab="register">Registrieren</button>
+            </div>
+
+            <div class="auth-message" id="auth-message" style="display: none;"></div>
+
+            <!-- Anmelden -->
+            <div class="auth-panel" id="auth-panel-login">
+                <form id="form-login" class="auth-form">
+                    <label class="auth-field">
+                        <span>E-Mail</span>
+                        <input type="email" id="login-email" autocomplete="email" required placeholder="name@beispiel.de">
+                    </label>
+                    <label class="auth-field">
+                        <span>Passwort</span>
+                        <input type="password" id="login-password" autocomplete="current-password" required placeholder="Dein Passwort">
+                    </label>
+                    <a href="#" class="auth-link auth-link-right" data-auth-goto="reset-request">Passwort vergessen?</a>
+                    <button type="submit" class="btn btn-primary auth-submit">Anmelden</button>
+                </form>
+                <p class="auth-switch">Noch keinen Account? <a href="#" class="auth-link" data-auth-goto="register">Jetzt registrieren</a></p>
+            </div>
+
+            <!-- Registrieren -->
+            <div class="auth-panel" id="auth-panel-register" style="display: none;">
+                <form id="form-register" class="auth-form">
+                    <label class="auth-field">
+                        <span>Anzeigename</span>
+                        <input type="text" id="register-name" maxlength="20" autocomplete="nickname" required placeholder="So siehst du in der Rangliste aus">
+                        <small>3–20 Zeichen, kein echter Name nötig</small>
+                    </label>
+                    <label class="auth-field">
+                        <span>E-Mail</span>
+                        <input type="email" id="register-email" autocomplete="email" required placeholder="name@beispiel.de">
+                    </label>
+                    <label class="auth-field">
+                        <span>Passwort</span>
+                        <input type="password" id="register-password" autocomplete="new-password" minlength="8" required placeholder="Mindestens 8 Zeichen">
+                    </label>
+                    <label class="auth-checkbox">
+                        <input type="checkbox" id="register-privacy">
+                        <span>Ich habe die <a href="#" class="auth-link" id="link-open-privacy">Datenschutzerklärung</a> gelesen.</span>
+                    </label>
+                    <button type="submit" class="btn btn-primary auth-submit">Account erstellen</button>
+                </form>
+                <p class="auth-switch">Schon registriert? <a href="#" class="auth-link" data-auth-goto="login">Anmelden</a></p>
+            </div>
+
+            <!-- E-Mail bestätigen -->
+            <div class="auth-panel" id="auth-panel-verify" style="display: none;">
+                <div class="auth-icon-big">📬</div>
+                <p class="auth-text">Wir haben einen Bestätigungscode an <strong id="verify-email-text">deine E-Mail</strong> geschickt. Schau auch im Spam-Ordner nach.</p>
+                <form id="form-verify" class="auth-form">
+                    <label class="auth-field">
+                        <span>Bestätigungscode</span>
+                        <input type="text" id="verify-code" class="auth-code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required placeholder="123456">
+                    </label>
+                    <button type="submit" class="btn btn-primary auth-submit">Bestätigen</button>
+                </form>
+                <p class="auth-switch">Keinen Code bekommen? <a href="#" class="auth-link" id="btn-resend-code">Neuen Code senden</a></p>
+            </div>
+
+            <!-- Passwort vergessen: E-Mail -->
+            <div class="auth-panel" id="auth-panel-reset-request" style="display: none;">
+                <p class="auth-text">Gib deine E-Mail ein. Wir schicken dir einen Code, mit dem du ein neues Passwort setzen kannst.</p>
+                <form id="form-reset-request" class="auth-form">
+                    <label class="auth-field">
+                        <span>E-Mail</span>
+                        <input type="email" id="reset-email" autocomplete="email" required placeholder="name@beispiel.de">
+                    </label>
+                    <button type="submit" class="btn btn-primary auth-submit">Code senden</button>
+                </form>
+                <p class="auth-switch"><a href="#" class="auth-link" data-auth-goto="login">← Zurück zum Anmelden</a></p>
+            </div>
+
+            <!-- Passwort vergessen, Schritt 2: Code eingeben -->
+            <div class="auth-panel" id="auth-panel-reset-verify" style="display: none;">
+                <div class="auth-icon-big">📬</div>
+                <p class="auth-text">Wir haben dir einen <strong>6-stelligen Code</strong> per E-Mail geschickt. Schau auch im Spam-Ordner nach.</p>
+                <form id="form-reset-verify" class="auth-form">
+                    <label class="auth-field">
+                        <span>Code aus der E-Mail</span>
+                        <input type="text" id="reset-code" class="auth-code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required placeholder="123456">
+                    </label>
+                    <button type="submit" class="btn btn-primary auth-submit">Code prüfen</button>
+                </form>
+                <p class="auth-switch"><a href="#" class="auth-link" data-auth-goto="reset-request">Keinen Code bekommen? Nochmal senden</a></p>
+            </div>
+
+            <!-- Passwort vergessen, Schritt 3: neues Passwort -->
+            <div class="auth-panel" id="auth-panel-reset-password" style="display: none;">
+                <div class="auth-icon-big">🔑</div>
+                <form id="form-reset-password" class="auth-form">
+                    <label class="auth-field">
+                        <span>Neues Passwort</span>
+                        <input type="password" id="reset-password" autocomplete="new-password" minlength="8" required placeholder="Mindestens 8 Zeichen">
+                    </label>
+                    <label class="auth-field">
+                        <span>Neues Passwort wiederholen</span>
+                        <input type="password" id="reset-password-2" autocomplete="new-password" minlength="8" required placeholder="Nochmal eingeben">
+                    </label>
+                    <button type="submit" class="btn btn-primary auth-submit">Passwort speichern</button>
+                </form>
+            </div>
+
+            <!-- Anzeigename wählen (z. B. nach Google-Login) -->
+            <div class="auth-panel" id="auth-panel-name" style="display: none;">
+                <div class="auth-icon-big">🏷️</div>
+                <p class="auth-text">Fast fertig! Wähle einen Anzeigenamen. So erscheinst du später in der Endless-Rangliste.</p>
+                <form id="form-choose-name" class="auth-form">
+                    <label class="auth-field">
+                        <span>Anzeigename</span>
+                        <input type="text" id="auth-name-input" maxlength="20" autocomplete="nickname" required placeholder="z. B. FlaggenProfi">
+                        <small>3–20 Zeichen: Buchstaben, Zahlen, Leerzeichen, _ und -</small>
+                    </label>
+                    <button type="submit" class="btn btn-primary auth-submit">Speichern</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Profil Modal -->
+        <div class="modal-dialog profile-dialog" id="modal-profil">
+            <div class="modal-header">
+                <h3>Dein Profil</h3>
+                <button class="modal-close" data-close-modal="profil">&times;</button>
+            </div>
+            <div class="modal-body profile-body">
+                <div class="profile-head">
+                    <span class="profile-avatar profile-avatar-big" id="profile-avatar-big">?</span>
+                    <div class="profile-head-info">
+                        <strong id="profile-display-name">—</strong>
+                        <span id="profile-email"></span>
+                        <span class="profile-meta" id="profile-provider"></span>
+                        <span class="profile-meta" id="profile-since"></span>
+                    </div>
+                </div>
+
+                <div class="auth-message" id="profile-message" style="display: none;"></div>
+
+                <form id="form-profile-name" class="auth-form profile-section">
+                    <label class="auth-field">
+                        <span>Anzeigename ändern</span>
+                        <div class="profile-name-row">
+                            <input type="text" id="profile-name-input" maxlength="20" autocomplete="nickname" required>
+                            <button type="submit" class="btn btn-primary">Speichern</button>
+                        </div>
+                        <small>3–20 Zeichen: Buchstaben, Zahlen, Leerzeichen, _ und -</small>
+                    </label>
+                </form>
+
+                <button class="btn btn-secondary profile-logout" id="btn-profile-logout">↪ Abmelden</button>
+
+                <div class="profile-danger">
+                    <strong>Account löschen</strong>
+                    <span>Dein Account, dein Anzeigename und alle online gespeicherten Daten werden endgültig gelöscht.</span>
+                    <button class="btn btn-danger-outline" id="btn-profile-delete">Account löschen</button>
+                    <div class="profile-delete-confirm" id="profile-delete-confirm" style="display: none;">
+                        <span>Bist du sicher? Das kann nicht rückgängig gemacht werden.</span>
+                        <div class="profile-delete-actions">
+                            <button class="btn btn-secondary" id="btn-profile-delete-cancel">Abbrechen</button>
+                            <button class="btn btn-danger" id="btn-profile-delete-final">Ja, endgültig löschen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz abbrechen? -->
+        <div class="modal-dialog quit-dialog" id="modal-quit">
+            <div class="quit-icon">🚪</div>
+            <h3 class="quit-title">Quiz abbrechen?</h3>
+            <p class="quit-text">Dein Fortschritt in dieser Runde geht verloren.</p>
+            <div class="quit-actions">
+                <button class="btn btn-secondary" id="btn-quit-cancel">Weiterspielen</button>
+                <button class="btn btn-danger" id="btn-quit-confirm">Ja, abbrechen</button>
+            </div>
+        </div>
+
+        <!-- Einstellungen Modal -->
+        <div class="modal-dialog" id="modal-einstellungen">
+            <div class="modal-header">
+                <h3>Einstellungen</h3>
+                <button class="modal-close" data-close-modal="einstellungen">&times;</button>
+            </div>
+            <div class="modal-body settings-body">
+                <div class="setting-row setting-row-stack">
+                    <div class="setting-info">
+                        <strong>🌗 Design</strong>
+                        <span>Dunkel, hell oder wie dein Gerät eingestellt ist</span>
+                    </div>
+                    <div class="segmented" id="setting-theme">
+                        <button data-value="dark">🌙 Dunkel</button>
+                        <button data-value="light">☀️ Hell</button>
+                        <button data-value="auto">⚙️ Auto</button>
+                    </div>
+                </div>
+
+                <div class="setting-row setting-row-stack">
+                    <div class="setting-info">
+                        <strong>⏩ Tempo nach einer Antwort</strong>
+                        <span>Wie lange die richtige Antwort angezeigt wird. Bei Time Attack geht es immer sofort weiter.</span>
+                    </div>
+                    <div class="segmented" id="setting-tempo">
+                        <button data-value="fast">Schnell</button>
+                        <button data-value="normal">Normal</button>
+                        <button data-value="slow">Langsam</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <strong>🔊 Soundeffekte</strong>
+                        <span>Töne bei richtigen und falschen Antworten</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="sound-toggle-checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <strong>📳 Vibration</strong>
+                        <span>Handy vibriert bei einer falschen Antwort (nicht auf iPhones)</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="vibration-toggle-checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <strong>⌨️ Tastensteuerung</strong>
+                        <span>Antworten mit den Tasten 1 bis 4 auswählen</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="keyboard-toggle-checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div class="settings-reset">
+                    <div class="setting-info">
+                        <strong>🗑️ Fortschritt zurücksetzen</strong>
+                        <span>Löscht alle Level-Fortschritte und deinen Endless-Highscore auf diesem Gerät. Die Online-Rangliste bleibt unverändert.</span>
+                    </div>
+                    <button class="btn btn-danger-outline" id="btn-reset-progress">Fortschritt zurücksetzen</button>
+                    <div class="reset-confirm" id="reset-confirm" style="display: none;">
+                        <span>Wirklich alles zurücksetzen? Das kann nicht rückgängig gemacht werden.</span>
+                        <div class="profile-delete-actions">
+                            <button class="btn btn-secondary" id="btn-reset-cancel">Abbrechen</button>
+                            <button class="btn btn-danger" id="btn-reset-final">Ja, zurücksetzen</button>
+                        </div>
+                    </div>
+                    <p class="reset-done" id="reset-done" style="display: none;">✓ Fortschritt wurde zurückgesetzt.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-close-modal="einstellungen">Fertig</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script File -->
+    <!-- Versionsnummer: bei jeder Änderung erhöhen, damit Browser keine alten Dateien nehmen -->
+    <script>window.ASSET_VERSION = '202611101722';</script>
+    <!-- Die Kartendateien (lib/d3-*, lib/topojson-client, lib/weltkarte-daten, karte.js) lädt script.js erst, wenn der Kartenmodus gestartet wird -->
+    <script src="script.js?v=202611101722"></script>
+    <script src="lib/supabase.js?v=202611101722"></script>
+    <script src="supabase-config.js?v=202611101722"></script>
+    <script src="auth.js?v=202611101722"></script>
+    <script src="rangliste.js?v=202611101722"></script>
+</body>
+</html>
