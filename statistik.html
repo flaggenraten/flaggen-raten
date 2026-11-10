@@ -21,25 +21,36 @@
         :root {
             --bg: #0b1329;
             --card: #131c38;
+            --card-2: #0f1730;
             --border: #1e293b;
             --text: #f8fafc;
             --muted: #94a3b8;
             --grid: #1e293b;
             --bar: #3b82f6;
             --bar-hover: #60a5fa;
+            --bar-2: #a855f7;
+            --up: #4ade80;
+            --down: #f87171;
             --radius: 16px;
         }
         [data-theme="light"] {
             --bg: #f1f5f9;
             --card: #ffffff;
+            --card-2: #f8fafc;
             --border: #e2e8f0;
             --text: #0f172a;
             --muted: #64748b;
             --grid: #e2e8f0;
             --bar: #2563eb;
             --bar-hover: #1d4ed8;
+            --bar-2: #9333ea;
+            --up: #16a34a;
+            --down: #dc2626;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* Seite bleibt unsichtbar, bis feststeht, dass du Admin bist */
+        body { visibility: hidden; }
+        body.ok { visibility: visible; }
         body {
             background: var(--bg);
             color: var(--text);
@@ -50,9 +61,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem 1.5rem;
+            padding: 0.9rem 1.5rem;
             border-bottom: 1px solid var(--border);
             background: var(--card);
+            position: sticky;
+            top: 0;
+            z-index: 5;
         }
         header a {
             color: var(--text);
@@ -65,57 +79,84 @@
             font-weight: 600;
         }
         main {
-            max-width: 1000px;
+            max-width: 1040px;
             margin: 0 auto;
-            padding: 2rem 1rem 3rem;
+            padding: 1.75rem 1rem 3rem;
+        }
+        .top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
         }
         h1 {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
             font-weight: 800;
-            margin-bottom: 0.25rem;
         }
-        .sub {
+        .range-label {
             color: var(--muted);
-            margin-bottom: 1.5rem;
             font-size: 0.95rem;
+            margin-top: 0.2rem;
         }
-        .notice {
+        .refresh {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+        .refresh button {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            text-align: center;
-            color: var(--muted);
-            line-height: 1.6;
+            color: var(--text);
+            border-radius: 999px;
+            padding: 0.4rem 0.8rem;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
         }
-        .notice a { color: var(--bar-hover); font-weight: 700; }
         .filters {
             display: flex;
             gap: 0.4rem;
             flex-wrap: wrap;
             margin-bottom: 1.5rem;
-        }
-        .filters button {
             background: var(--card);
             border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px;
+            width: fit-content;
+            max-width: 100%;
+        }
+        .filters button {
+            background: none;
+            border: none;
             color: var(--muted);
             font-family: inherit;
             font-weight: 700;
             font-size: 0.875rem;
-            padding: 0.5rem 0.9rem;
+            padding: 0.5rem 1rem;
             border-radius: 999px;
             cursor: pointer;
         }
         .filters button.active {
             background: var(--bar);
-            border-color: var(--bar);
             color: #fff;
+        }
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 1.75rem 0 0.75rem;
         }
         .tiles {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 0.75rem;
-            margin-bottom: 1.5rem;
         }
         .tile {
             background: var(--card);
@@ -129,16 +170,20 @@
             font-weight: 600;
         }
         .tile .value {
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            margin-top: 0.25rem;
+            margin-top: 0.2rem;
             font-variant-numeric: tabular-nums;
         }
-        .tile .hint {
-            color: var(--muted);
-            font-size: 0.75rem;
+        .tile .delta {
+            font-size: 0.78rem;
+            font-weight: 700;
             margin-top: 0.15rem;
+            color: var(--muted);
         }
+        .delta.up { color: var(--up); }
+        .delta.down { color: var(--down); }
+        .delta .vs { font-weight: 500; color: var(--muted); }
         .grid2 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -150,17 +195,29 @@
             border-radius: var(--radius);
             padding: 1.1rem 1.1rem 0.9rem;
             margin-bottom: 0.75rem;
-            position: relative;
+        }
+        .card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
         }
         .card h2 {
             font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 0.15rem;
         }
         .card .card-sub {
             color: var(--muted);
             font-size: 0.8rem;
-            margin-bottom: 0.75rem;
+        }
+        .card .big {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .card .big strong {
+            color: var(--text);
+            font-size: 1rem;
         }
         .chart svg {
             display: block;
@@ -175,11 +232,41 @@
         }
         .chart .gridline { stroke: var(--grid); stroke-width: 1; }
         .chart .bar { fill: var(--bar); }
-        .chart .hit:hover + .bar,
+        .chart.violett .bar { fill: var(--bar-2); }
         .chart .bar.hover { fill: var(--bar-hover); }
-        .chart .hit { fill: transparent; cursor: default; }
+        .chart.violett .bar.hover { opacity: 0.8; }
+        .chart .hit { fill: transparent; }
         .chart .val { fill: var(--text); font-weight: 700; font-size: 12px; }
-        .chart .empty { fill: var(--muted); font-size: 13px; }
+        .chart .pct { fill: var(--muted); font-size: 11px; }
+        .empty-note {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+        /* Geräte-Balken */
+        .split {
+            display: flex;
+            height: 14px;
+            border-radius: 999px;
+            overflow: hidden;
+            gap: 2px;
+            background: var(--grid);
+            margin: 0.4rem 0 0.8rem;
+        }
+        .split div { height: 100%; }
+        .split .m { background: var(--bar); }
+        .split .d { background: var(--bar-2); }
+        .legend {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+        .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+        .legend strong { color: var(--text); }
         .tooltip {
             position: fixed;
             pointer-events: none;
@@ -196,7 +283,7 @@
             z-index: 10;
         }
         details {
-            margin-top: 0.5rem;
+            margin-top: 0.4rem;
             color: var(--muted);
             font-size: 0.85rem;
         }
@@ -217,8 +304,13 @@
         .foot {
             color: var(--muted);
             font-size: 0.8rem;
-            margin-top: 1rem;
+            margin-top: 1.25rem;
             line-height: 1.6;
+        }
+        @media (max-width: 520px) {
+            .filters { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; border-radius: 14px; }
+            .filters button { padding: 0.5rem 0.2rem; font-size: 0.75rem; white-space: nowrap; }
+            .tile .value { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -229,62 +321,84 @@
     </header>
 
     <main>
-        <h1>📊 Statistik</h1>
-        <p class="sub">Nur für dich sichtbar · ohne Cookies · Zeiten in deutscher Zeit</p>
-
-        <div id="status" class="notice">Statistik wird geladen …</div>
-
-        <div id="dashboard" style="display: none;">
-            <div class="filters" id="filters">
-                <button data-range="7">7 Tage</button>
-                <button data-range="30" class="active">30 Tage</button>
-                <button data-range="365">12 Monate</button>
-                <button data-range="all">Alles</button>
+        <div class="top">
+            <div>
+                <h1>📊 Statistik</h1>
+                <p class="range-label" id="range-label"></p>
             </div>
-
-            <div class="tiles">
-                <div class="tile"><div class="label">Besuche</div><div class="value" id="t-visits">0</div><div class="hint" id="t-visits-hint"></div></div>
-                <div class="tile"><div class="label">Ø Verweildauer</div><div class="value" id="t-duration">–</div><div class="hint">pro Besuch</div></div>
-                <div class="tile"><div class="label">Gespielte Runden</div><div class="value" id="t-games">0</div><div class="hint" id="t-games-hint"></div></div>
-                <div class="tile"><div class="label">Neue Accounts</div><div class="value" id="t-signups">0</div><div class="hint" id="t-users-total"></div></div>
-                <div class="tile"><div class="label">Handy</div><div class="value" id="t-mobile">–</div><div class="hint" id="t-desktop"></div></div>
+            <div class="refresh">
+                <span id="updated"></span>
+                <button id="btn-refresh">⟳ Aktualisieren</button>
             </div>
-
-            <div class="card">
-                <h2>Besuche</h2>
-                <p class="card-sub" id="visits-sub">pro Tag</p>
-                <div class="chart" id="chart-visits"></div>
-                <details>
-                    <summary>Als Tabelle anzeigen</summary>
-                    <table id="table-visits"></table>
-                </details>
-            </div>
-
-            <div class="card">
-                <h2>Gespielte Runden</h2>
-                <p class="card-sub" id="games-sub">pro Tag</p>
-                <div class="chart" id="chart-games"></div>
-            </div>
-
-            <div class="grid2">
-                <div class="card">
-                    <h2>Runden nach Modus</h2>
-                    <p class="card-sub">im gewählten Zeitraum</p>
-                    <div class="chart" id="chart-modes"></div>
-                </div>
-                <div class="card">
-                    <h2>Runden nach Level</h2>
-                    <p class="card-sub">Klassisch, Umgedreht und Karte zusammen</p>
-                    <div class="chart" id="chart-levels"></div>
-                </div>
-            </div>
-
-            <p class="foot">
-                Gezählt werden Besuche (Seitenaufrufe), keine einzelnen Personen. Verweildauer = Zeit, in der die Seite sichtbar geöffnet war.
-                Testaufrufe vom eigenen PC (Live Server) werden nicht gezählt.
-                <span id="first-day"></span>
-            </p>
         </div>
+
+        <div class="filters" id="filters">
+            <button data-range="today" class="active">Heute</button>
+            <button data-range="7">7 Tage</button>
+            <button data-range="30">30 Tage</button>
+            <button data-range="365">12 Monate</button>
+            <button data-range="all">Gesamt</button>
+        </div>
+
+        <!-- Überblick -->
+        <div class="tiles">
+            <div class="tile"><div class="label">👀 Besuche</div><div class="value" id="k-visits">0</div><div class="delta" id="d-visits"></div></div>
+            <div class="tile"><div class="label">⏱️ Ø Verweildauer</div><div class="value" id="k-duration">–</div><div class="delta" id="d-duration"></div></div>
+            <div class="tile"><div class="label">🎮 Gespielte Runden</div><div class="value" id="k-games">0</div><div class="delta" id="d-games"></div></div>
+            <div class="tile"><div class="label">👤 Neue Accounts</div><div class="value" id="k-signups">0</div><div class="delta" id="d-signups"></div></div>
+            <div class="tile"><div class="label">🏆 Accounts gesamt</div><div class="value" id="k-users">0</div><div class="delta" id="d-users"></div></div>
+        </div>
+
+        <!-- Verlauf -->
+        <p class="section-title">Verlauf</p>
+        <div class="card">
+            <div class="card-head">
+                <div><h2>Besuche</h2><p class="card-sub" id="visits-unit">pro Stunde</p></div>
+                <p class="big" id="visits-peak"></p>
+            </div>
+            <div class="chart" id="chart-visits"></div>
+            <details>
+                <summary>Als Tabelle anzeigen</summary>
+                <table id="table-visits"></table>
+            </details>
+        </div>
+        <div class="card">
+            <div class="card-head">
+                <div><h2>Gespielte Runden</h2><p class="card-sub" id="games-unit">pro Stunde</p></div>
+                <p class="big" id="games-peak"></p>
+            </div>
+            <div class="chart violett" id="chart-games"></div>
+        </div>
+
+        <!-- Was wird gespielt -->
+        <p class="section-title">Was wird gespielt?</p>
+        <div class="grid2">
+            <div class="card">
+                <div class="card-head"><div><h2>Spielmodi</h2><p class="card-sub">Anteil an allen Runden</p></div></div>
+                <div class="chart" id="chart-modes"></div>
+            </div>
+            <div class="card">
+                <div class="card-head"><div><h2>Level</h2><p class="card-sub">Klassisch, Umgedreht und Karte</p></div></div>
+                <div class="chart" id="chart-levels"></div>
+            </div>
+        </div>
+
+        <!-- Geräte -->
+        <p class="section-title">Geräte</p>
+        <div class="card">
+            <div class="card-head"><div><h2>Handy oder PC?</h2><p class="card-sub">Anteil der Besuche</p></div></div>
+            <div class="split" id="split"><div class="m" id="split-m"></div><div class="d" id="split-d"></div></div>
+            <div class="legend">
+                <span><i style="background: var(--bar)"></i>📱 Handy <strong id="l-mobile">–</strong></span>
+                <span><i style="background: var(--bar-2)"></i>💻 PC <strong id="l-desktop">–</strong></span>
+            </div>
+        </div>
+
+        <p class="foot">
+            Gezählt werden Besuche (Seitenaufrufe), keine einzelnen Personen. Verweildauer = Zeit, in der die Seite sichtbar geöffnet war.
+            Vergleich jeweils mit dem gleich langen Zeitraum davor. Testaufrufe vom eigenen PC (Live Server) werden nicht gezählt.
+            <span id="first-day"></span>
+        </p>
     </main>
 
     <div class="tooltip" id="tooltip"></div>
@@ -294,6 +408,8 @@
     <script>
     (function () {
         const $ = (id) => document.getElementById(id);
+        const zurStartseite = () => window.location.replace('/');
+
         const MODI = {
             'flag-to-name': 'Klassisch',
             'name-to-flag': 'Umgedreht',
@@ -304,31 +420,30 @@
         const MONATE = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
         const zahl = (n) => Number(n || 0).toLocaleString('de-DE');
 
-        function status(html) {
-            $('status').innerHTML = html;
-            $('status').style.display = 'block';
-            $('dashboard').style.display = 'none';
-        }
-
         // ---------- Datum-Helfer ----------
         function iso(d) {
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, '0');
-            const t = String(d.getDate()).padStart(2, '0');
-            return `${y}-${m}-${t}`;
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
-        function addDays(d, n) {
-            const x = new Date(d);
-            x.setDate(x.getDate() + n);
-            return x;
-        }
+        function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+        function datumKurz(d) { return d.toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' }); }
         function dauerText(sek) {
             if (!sek) return '–';
             const s = Math.round(sek);
             if (s < 60) return `${s} s`;
             const m = Math.floor(s / 60);
-            const r = s % 60;
-            return m < 60 ? `${m}:${String(r).padStart(2, '0')} min` : `${Math.floor(m / 60)} h ${m % 60} min`;
+            return m < 60 ? `${m}:${String(s % 60).padStart(2, '0')} min` : `${Math.floor(m / 60)} h ${m % 60} min`;
+        }
+
+        // ---------- Vergleich mit Vorzeitraum ----------
+        function delta(el, jetzt, vorher, text) {
+            el.className = 'delta';
+            if (vorher === null) { el.textContent = text || ''; return; }
+            if (!vorher && !jetzt) { el.innerHTML = `<span class="vs">${text}</span>`; return; }
+            if (!vorher) { el.classList.add('up'); el.innerHTML = `▲ neu <span class="vs">${text}</span>`; return; }
+            const p = Math.round((jetzt - vorher) / vorher * 100);
+            if (p > 0) el.classList.add('up');
+            if (p < 0) el.classList.add('down');
+            el.innerHTML = `${p > 0 ? '▲' : p < 0 ? '▼' : '='} ${p > 0 ? '+' : ''}${p} % <span class="vs">${text}</span>`;
         }
 
         // ---------- Tooltip ----------
@@ -340,53 +455,13 @@
             tip.style.opacity = '1';
         }
         function versteckeTip() { tip.style.opacity = '0'; }
-
-        // ---------- Säulendiagramm (eine Reihe) ----------
-        function saeulen(container, punkte, einheit) {
-            // Breite = echte Breite des Kastens, damit die Schrift überall gleich groß bleibt
-            const W = Math.max(280, Math.round(container.clientWidth || 640)), H = 220, L = 38, R = 6, T = 10, B = 26;
-            const max = Math.max(1, ...punkte.map(p => p.value));
-            // "schöne" Achsen-Schritte (1, 2, 2.5, 5, 10 …), damit die Zahlen glatt sind
-            const roh = max / 4;
-            const mag = Math.pow(10, Math.floor(Math.log10(roh)));
-            const schritt = Math.max(1, [1, 2, 2.5, 5, 10].map(f => f * mag).find(x => x >= roh));
-            const top = Math.ceil(schritt) * 4;
-            const n = punkte.length;
-            const breite = (W - L - R) / n;
-            const balken = Math.max(2, Math.min(28, breite - 2));
-            let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${einheit}">`;
-
-            for (let i = 0; i <= 4; i++) {
-                const y = T + (H - T - B) * (1 - i / 4);
-                svg += `<line class="gridline" x1="${L}" x2="${W - R}" y1="${y}" y2="${y}"/>`;
-                svg += `<text x="${L - 6}" y="${y + 4}" text-anchor="end">${zahl(Math.round(top * i / 4))}</text>`;
-            }
-
-            const jedes = Math.ceil(n / Math.max(4, Math.floor(W / 64))); // Beschriftungen passend zur Breite
-            punkte.forEach((p, i) => {
-                const x = L + i * breite + (breite - balken) / 2;
-                const h = (H - T - B) * (p.value / top);
-                const y = H - B - h;
-                const r = Math.min(4, balken / 2, h);
-                // Hit-Fläche über die ganze Spalte
-                svg += `<rect class="hit" data-i="${i}" x="${L + i * breite}" y="${T}" width="${breite}" height="${H - T - B}"/>`;
-                if (p.value > 0) {
-                    // oben abgerundet, unten gerade an der Grundlinie
-                    svg += `<path class="bar" data-i="${i}" d="M${x},${H - B} V${y + r} Q${x},${y} ${x + r},${y} H${x + balken - r} Q${x + balken},${y} ${x + balken},${y + r} V${H - B} Z"/>`;
-                }
-                if (i % jedes === 0 || i === n - 1) {
-                    svg += `<text x="${x + balken / 2}" y="${H - 8}" text-anchor="middle">${p.short}</text>`;
-                }
-            });
-            svg += '</svg>';
-            container.innerHTML = svg;
-
+        function hoverAn(container, texte) {
             const bars = container.querySelectorAll('.bar');
             container.querySelectorAll('.hit').forEach(hit => {
                 const i = +hit.dataset.i;
                 hit.addEventListener('mousemove', (e) => {
                     bars.forEach(b => b.classList.toggle('hover', +b.dataset.i === i));
-                    zeigeTip(e, `${punkte[i].long}: ${zahl(punkte[i].value)} ${einheit}`);
+                    zeigeTip(e, texte[i]);
                 });
                 hit.addEventListener('mouseleave', () => {
                     bars.forEach(b => b.classList.remove('hover'));
@@ -395,15 +470,57 @@
             });
         }
 
-        // ---------- Waagerechte Balken ----------
-        function waagerecht(container, punkte) {
+        // ---------- Säulendiagramm ----------
+        function saeulen(container, punkte, einheit) {
+            const W = Math.max(280, Math.round(container.clientWidth || 640)), H = 210, L = 38, R = 6, T = 10, B = 26;
             const max = Math.max(1, ...punkte.map(p => p.value));
-            const W = Math.max(280, Math.round(container.clientWidth || 420)), zeile = 34, L = 92, R = 44;
+            const roh = max / 4;
+            const mag = Math.pow(10, Math.floor(Math.log10(roh)));
+            const schritt = Math.max(1, [1, 2, 2.5, 5, 10].map(f => f * mag).find(x => x >= roh));
+            const top = Math.ceil(schritt) * 4;
+            const n = punkte.length;
+            const breite = (W - L - R) / n;
+            const balken = Math.max(2, Math.min(30, breite - 2));
+            let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${einheit}">`;
+            for (let i = 0; i <= 4; i++) {
+                const y = T + (H - T - B) * (1 - i / 4);
+                svg += `<line class="gridline" x1="${L}" x2="${W - R}" y1="${y}" y2="${y}"/>`;
+                svg += `<text x="${L - 6}" y="${y + 4}" text-anchor="end">${zahl(Math.round(top * i / 4))}</text>`;
+            }
+            const jedes = Math.ceil(n / Math.max(4, Math.floor(W / 64)));
+            punkte.forEach((p, i) => {
+                const x = L + i * breite + (breite - balken) / 2;
+                const h = (H - T - B) * (p.value / top);
+                const y = H - B - h;
+                const r = Math.min(4, balken / 2, h);
+                svg += `<rect class="hit" data-i="${i}" x="${L + i * breite}" y="${T}" width="${breite}" height="${H - T - B}"/>`;
+                if (p.value > 0) {
+                    svg += `<path class="bar" data-i="${i}" d="M${x},${H - B} V${y + r} Q${x},${y} ${x + r},${y} H${x + balken - r} Q${x + balken},${y} ${x + balken},${y + r} V${H - B} Z"/>`;
+                }
+                if (i % jedes === 0) {
+                    svg += `<text x="${x + balken / 2}" y="${H - 8}" text-anchor="middle">${p.short}</text>`;
+                }
+            });
+            svg += '</svg>';
+            container.innerHTML = svg;
+            hoverAn(container, punkte.map(p => `${p.long}: ${zahl(p.value)} ${einheit}`));
+        }
+
+        // ---------- Waagerechte Balken mit Prozent ----------
+        function waagerecht(container, punkte) {
+            const summe = punkte.reduce((s, p) => s + p.value, 0);
+            if (!summe) {
+                container.innerHTML = '<p class="empty-note">Im gewählten Zeitraum wurde noch nichts gespielt.</p>';
+                return;
+            }
+            const max = Math.max(...punkte.map(p => p.value));
+            const W = Math.max(280, Math.round(container.clientWidth || 420)), zeile = 34, L = 92, R = 84;
             const H = punkte.length * zeile;
             let svg = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
             punkte.forEach((p, i) => {
                 const y = i * zeile + 8;
-                const w = Math.max(p.value > 0 ? 4 : 0, (W - L - R) * p.value / max);
+                const w = p.value > 0 ? Math.max(4, (W - L - R) * p.value / max) : 0;
+                const pct = Math.round(p.value / summe * 100);
                 svg += `<text x="${L - 8}" y="${y + 13}" text-anchor="end">${p.label}</text>`;
                 svg += `<rect class="hit" data-i="${i}" x="0" y="${i * zeile}" width="${W}" height="${zeile}"/>`;
                 if (w > 0) {
@@ -411,164 +528,204 @@
                     svg += `<path class="bar" data-i="${i}" d="M${L},${y} H${L + w - r} Q${L + w},${y} ${L + w},${y + r} V${y + 18 - r} Q${L + w},${y + 18} ${L + w - r},${y + 18} H${L} Z"/>`;
                 }
                 svg += `<text class="val" x="${L + w + 6}" y="${y + 13}">${zahl(p.value)}</text>`;
+                svg += `<text class="pct" x="${W - 2}" y="${y + 13}" text-anchor="end">${pct} %</text>`;
             });
             svg += '</svg>';
             container.innerHTML = svg;
-
-            const bars = container.querySelectorAll('.bar');
-            container.querySelectorAll('.hit').forEach(hit => {
-                const i = +hit.dataset.i;
-                hit.addEventListener('mousemove', (e) => {
-                    bars.forEach(b => b.classList.toggle('hover', +b.dataset.i === i));
-                    zeigeTip(e, `${punkte[i].label}: ${zahl(punkte[i].value)} Runden`);
-                });
-                hit.addEventListener('mouseleave', () => {
-                    bars.forEach(b => b.classList.remove('hover'));
-                    versteckeTip();
-                });
-            });
+            hoverAn(container, punkte.map(p => `${p.label}: ${zahl(p.value)} Runden (${Math.round(p.value / summe * 100)} %)`));
         }
 
-        // ---------- Daten in Tage bzw. Monate einteilen ----------
-        function zeitreihe(von, bis, nachMonat, werte) {
+        // ---------- Zeitreihen ----------
+        function tageReihe(von, bis, werte) {
             const punkte = [];
-            if (nachMonat) {
-                let d = new Date(von.getFullYear(), von.getMonth(), 1);
-                while (d <= bis) {
-                    const key = iso(d).slice(0, 7);
-                    punkte.push({ key, short: MONATE[d.getMonth()], long: `${MONATE[d.getMonth()]} ${d.getFullYear()}`, value: 0 });
-                    d = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-                }
-                const map = Object.fromEntries(punkte.map(p => [p.key, p]));
-                werte.forEach(w => { const p = map[w.day.slice(0, 7)]; if (p) p.value += w.value; });
-            } else {
-                for (let d = new Date(von); d <= bis; d = addDays(d, 1)) {
-                    punkte.push({ key: iso(d), short: `${d.getDate()}.${d.getMonth() + 1}.`, long: d.toLocaleDateString('de-DE'), value: 0 });
-                }
-                const map = Object.fromEntries(punkte.map(p => [p.key, p]));
-                werte.forEach(w => { const p = map[w.day]; if (p) p.value += w.value; });
+            for (let d = new Date(von); d <= bis; d = addDays(d, 1)) {
+                punkte.push({ key: iso(d), short: `${d.getDate()}.${d.getMonth() + 1}.`, long: d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' }), value: 0 });
             }
+            const map = Object.fromEntries(punkte.map(p => [p.key, p]));
+            werte.forEach(w => { if (map[w.day]) map[w.day].value += w.value; });
             return punkte;
         }
-
-        // ---------- Laden & Anzeigen ----------
-        const cfg = window.SUPABASE_CONFIG || {};
-        if (!window.supabase || !cfg.url) {
-            status('Die Verbindung zur Datenbank ist nicht eingerichtet.');
-            return;
+        function monatsReihe(von, bis, werte) {
+            const punkte = [];
+            let d = new Date(von.getFullYear(), von.getMonth(), 1);
+            while (d <= bis) {
+                punkte.push({ key: iso(d).slice(0, 7), short: MONATE[d.getMonth()], long: `${MONATE[d.getMonth()]} ${d.getFullYear()}`, value: 0 });
+                d = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+            }
+            const map = Object.fromEntries(punkte.map(p => [p.key, p]));
+            werte.forEach(w => { const p = map[w.day.slice(0, 7)]; if (p) p.value += w.value; });
+            return punkte;
         }
+        function stundenReihe(werte, feld, bisStunde) {
+            const punkte = [];
+            for (let h = 0; h <= 23; h++) {
+                punkte.push({ short: `${h}`, long: `${h}:00–${h}:59 Uhr`, value: 0, zukunft: h > bisStunde });
+            }
+            werte.forEach(w => { if (punkte[w.hour]) punkte[w.hour].value += w[feld]; });
+            return punkte;
+        }
+        function spitze(punkte) {
+            const best = punkte.reduce((a, b) => (b.value > a.value ? b : a), { value: 0 });
+            return best.value ? `Meiste: <strong>${zahl(best.value)}</strong> · ${best.long}` : '';
+        }
+
+        // ---------- Supabase ----------
+        const cfg = window.SUPABASE_CONFIG || {};
+        if (!window.supabase || !cfg.url) { zurStartseite(); return; }
         const sb = window.supabase.createClient(cfg.url, cfg.anonKey, {
             auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
         });
 
         let firstDay = null;
+        let bereich = 'today';
 
-        async function anzeigen(range) {
+        function zeitraum(range) {
             const heute = new Date();
             heute.setHours(0, 0, 0, 0);
             let von;
-            if (range === 'all') {
-                von = firstDay ? new Date(firstDay + 'T00:00:00') : addDays(heute, -29);
-            } else {
-                von = addDays(heute, -(parseInt(range, 10) - 1));
-            }
-            const nachMonat = range === '365' || (range === 'all' && (heute - von) / 86400000 > 62);
-
-            const { data, error } = await sb.rpc('get_stats', { p_from: iso(von), p_to: iso(heute) });
-            if (error) {
-                status('Die Statistik konnte nicht geladen werden: ' + (error.message || 'unbekannter Fehler'));
-                return;
-            }
-            firstDay = data.first_day || firstDay;
-            $('status').style.display = 'none';
-            $('dashboard').style.display = 'block';
-
-            const daily = data.daily || [];
-            const visits = daily.reduce((s, d) => s + d.visits, 0);
-            const sek = daily.reduce((s, d) => s + Number(d.total_seconds), 0);
-            const samples = daily.reduce((s, d) => s + d.duration_samples, 0);
-            const mobile = daily.reduce((s, d) => s + d.mobile, 0);
-            const desktop = daily.reduce((s, d) => s + d.desktop, 0);
-            const games = (data.games || []).reduce((s, g) => s + g.plays, 0);
-            const signups = (data.signups || []).reduce((s, d) => s + d.count, 0);
-            const tage = Math.max(1, Math.round((heute - von) / 86400000) + 1);
-
-            $('t-visits').textContent = zahl(visits);
-            $('t-visits-hint').textContent = `Ø ${zahl(Math.round(visits / tage * 10) / 10)} pro Tag`;
-            $('t-duration').textContent = samples ? dauerText(sek / samples) : '–';
-            $('t-games').textContent = zahl(games);
-            $('t-games-hint').textContent = visits ? `${zahl(Math.round(games / visits * 10) / 10)} pro Besuch` : '';
-            $('t-signups').textContent = zahl(signups);
-            $('t-users-total').textContent = `${zahl(data.users_total)} insgesamt · ${zahl(data.ranked_total)} in der Rangliste`;
-            const geraete = mobile + desktop;
-            $('t-mobile').textContent = geraete ? `${Math.round(mobile / geraete * 100)} %` : '–';
-            $('t-desktop').textContent = geraete ? `PC: ${Math.round(desktop / geraete * 100)} %` : '';
-
-            const einheit = nachMonat ? 'pro Monat' : 'pro Tag';
-            $('visits-sub').textContent = einheit;
-            $('games-sub').textContent = einheit;
-
-            const besuchePunkte = zeitreihe(von, heute, nachMonat, daily.map(d => ({ day: d.day, value: d.visits })));
-            saeulen($('chart-visits'), besuchePunkte, 'Besuche');
-            saeulen($('chart-games'), zeitreihe(von, heute, nachMonat, (data.games_daily || []).map(d => ({ day: d.day, value: d.plays }))), 'Runden');
-
-            // Tabelle
-            let tab = `<tr><th>${nachMonat ? 'Monat' : 'Tag'}</th><th>Besuche</th></tr>`;
-            besuchePunkte.slice().reverse().forEach(p => { tab += `<tr><td>${p.long}</td><td>${zahl(p.value)}</td></tr>`; });
-            $('table-visits').innerHTML = tab;
-
-            // Modi
-            const proModus = Object.keys(MODI).map(m => ({
-                label: MODI[m],
-                value: (data.games || []).filter(g => g.mode === m).reduce((s, g) => s + g.plays, 0)
-            }));
-            waagerecht($('chart-modes'), proModus);
-
-            // Level
-            const proLevel = [1, 2, 3, 4, 5].map(l => ({
-                label: `Level ${l}`,
-                value: (data.games || []).filter(g => g.level === l).reduce((s, g) => s + g.plays, 0)
-            }));
-            waagerecht($('chart-levels'), proLevel);
-
-            $('first-day').textContent = firstDay ? `Daten seit ${new Date(firstDay + 'T00:00:00').toLocaleDateString('de-DE')}.` : '';
+            if (range === 'today') von = heute;
+            else if (range === 'all') von = firstDay ? new Date(firstDay + 'T00:00:00') : heute;
+            else von = addDays(heute, -(parseInt(range, 10) - 1));
+            const tage = Math.round((heute - von) / 86400000) + 1;
+            return { von, bis: heute, tage };
         }
 
-        let letzterBereich = '30';
-        let resizeTimer = null;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                if ($('dashboard').style.display !== 'none') anzeigen(letzterBereich);
-            }, 250);
-        });
+        function summen(data) {
+            const daily = data.daily || [];
+            return {
+                visits: daily.reduce((s, d) => s + d.visits, 0),
+                sek: daily.reduce((s, d) => s + Number(d.total_seconds), 0),
+                samples: daily.reduce((s, d) => s + d.duration_samples, 0),
+                mobile: daily.reduce((s, d) => s + d.mobile, 0),
+                desktop: daily.reduce((s, d) => s + d.desktop, 0),
+                games: (data.games || []).reduce((s, g) => s + g.plays, 0),
+                signups: (data.signups || []).reduce((s, d) => s + d.count, 0)
+            };
+        }
+
+        async function anzeigen() {
+            const { von, bis, tage } = zeitraum(bereich);
+            const vergleich = bereich !== 'all';
+            const vorBis = addDays(von, -1);
+            const vorVon = addDays(von, -tage);
+
+            const anfragen = [sb.rpc('get_stats', { p_from: iso(von), p_to: iso(bis) })];
+            if (vergleich) anfragen.push(sb.rpc('get_stats', { p_from: iso(vorVon), p_to: iso(vorBis) }));
+            if (bereich === 'today') anfragen.push(sb.rpc('get_stats_hourly', { p_day: iso(bis) }));
+            const ergebnisse = await Promise.all(anfragen);
+            if (ergebnisse.some(r => r.error)) {
+                console.warn(ergebnisse.map(r => r.error));
+            }
+            const data = ergebnisse[0].data || {};
+            const vor = vergleich && ergebnisse[1].data ? summen(ergebnisse[1].data) : null;
+            const stunden = bereich === 'today' ? (ergebnisse[2].data || []) : null;
+            firstDay = data.first_day || firstDay;
+            const s = summen(data);
+
+            // Überschrift
+            const labels = { today: 'Heute', '7': 'Letzte 7 Tage', '30': 'Letzte 30 Tage', '365': 'Letzte 12 Monate', all: 'Gesamt' };
+            $('range-label').textContent = bereich === 'today'
+                ? `Heute, ${bis.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`
+                : `${labels[bereich]} · ${datumKurz(von)} – ${datumKurz(bis)}`;
+            $('updated').textContent = `Stand ${new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr`;
+
+            // Kacheln
+            const vsText = bereich === 'today' ? 'ggü. gestern' : 'ggü. Zeitraum davor';
+            $('k-visits').textContent = zahl(s.visits);
+            delta($('d-visits'), s.visits, vor ? vor.visits : null, vergleich ? vsText : `Ø ${zahl(Math.round(s.visits / tage * 10) / 10)} pro Tag`);
+            const dauer = s.samples ? s.sek / s.samples : 0;
+            const dauerVor = vor && vor.samples ? vor.sek / vor.samples : (vor ? 0 : null);
+            $('k-duration').textContent = dauerText(dauer);
+            delta($('d-duration'), dauer, dauerVor, vergleich ? vsText : 'pro Besuch');
+            $('k-games').textContent = zahl(s.games);
+            delta($('d-games'), s.games, vor ? vor.games : null, vergleich ? vsText : (s.visits ? `${zahl(Math.round(s.games / s.visits * 10) / 10)} pro Besuch` : ''));
+            $('k-signups').textContent = zahl(s.signups);
+            delta($('d-signups'), s.signups, vor ? vor.signups : null, vergleich ? vsText : '');
+            $('k-users').textContent = zahl(data.users_total);
+            $('d-users').className = 'delta';
+            $('d-users').textContent = `${zahl(data.ranked_total)} davon in der Rangliste`;
+
+            // Verlauf
+            let besuche, runden, einheit;
+            if (bereich === 'today') {
+                const jetztStunde = new Date().getHours();
+                besuche = stundenReihe(stunden, 'visits', jetztStunde);
+                runden = stundenReihe(stunden, 'games', jetztStunde);
+                einheit = 'pro Stunde';
+            } else {
+                const nachMonat = bereich === '365' || (bereich === 'all' && tage > 62);
+                const f = nachMonat ? monatsReihe : tageReihe;
+                besuche = f(von, bis, (data.daily || []).map(d => ({ day: d.day, value: d.visits })));
+                runden = f(von, bis, (data.games_daily || []).map(d => ({ day: d.day, value: d.plays })));
+                einheit = nachMonat ? 'pro Monat' : 'pro Tag';
+            }
+            $('visits-unit').textContent = einheit;
+            $('games-unit').textContent = einheit;
+            saeulen($('chart-visits'), besuche, 'Besuche');
+            saeulen($('chart-games'), runden, 'Runden');
+            $('visits-peak').innerHTML = spitze(besuche);
+            $('games-peak').innerHTML = spitze(runden);
+
+            let tab = `<tr><th>${einheit === 'pro Stunde' ? 'Uhrzeit' : einheit === 'pro Monat' ? 'Monat' : 'Tag'}</th><th>Besuche</th><th>Runden</th></tr>`;
+            besuche.slice().reverse().forEach((p, i) => {
+                const r = runden[runden.length - 1 - i];
+                if (!p.zukunft) tab += `<tr><td>${p.long}</td><td>${zahl(p.value)}</td><td>${zahl(r ? r.value : 0)}</td></tr>`;
+            });
+            $('table-visits').innerHTML = tab;
+
+            // Modi & Level
+            const games = data.games || [];
+            waagerecht($('chart-modes'), Object.keys(MODI).map(m => ({
+                label: MODI[m],
+                value: games.filter(g => g.mode === m).reduce((x, g) => x + g.plays, 0)
+            })).sort((a, b) => b.value - a.value));
+            waagerecht($('chart-levels'), [1, 2, 3, 4, 5].map(l => ({
+                label: `Level ${l}`,
+                value: games.filter(g => g.level === l).reduce((x, g) => x + g.plays, 0)
+            })));
+
+            // Geräte
+            const geraete = s.mobile + s.desktop;
+            const pm = geraete ? Math.round(s.mobile / geraete * 100) : 0;
+            $('split-m').style.width = geraete ? `${pm}%` : '0';
+            $('split-d').style.width = geraete ? `${100 - pm}%` : '0';
+            $('l-mobile').textContent = geraete ? `${pm} % (${zahl(s.mobile)})` : '–';
+            $('l-desktop').textContent = geraete ? `${100 - pm} % (${zahl(s.desktop)})` : '–';
+
+            $('first-day').textContent = firstDay ? `Daten seit ${datumKurz(new Date(firstDay + 'T00:00:00'))}.` : '';
+        }
 
         async function start() {
+            // Nur Admins dürfen die Seite sehen – alle anderen sofort zur Startseite
             const { data: { session } } = await sb.auth.getSession();
-            if (!session) {
-                status('Bitte melde dich zuerst auf <a href="/">Flaggen-Raten.de</a> mit deinem Account an und öffne dann diese Seite erneut.');
-                return;
-            }
+            if (!session) return zurStartseite();
             const { data: istAdmin, error } = await sb.rpc('is_stats_admin');
-            if (error) {
-                status('Die Statistik ist noch nicht eingerichtet (SQL-Datei in Supabase ausführen).');
-                return;
-            }
-            if (!istAdmin) {
-                status('Diese Seite ist nur für den Betreiber sichtbar.');
-                return;
-            }
+            if (error || !istAdmin) return zurStartseite();
+
+            document.body.classList.add('ok');
 
             const buttons = document.querySelectorAll('#filters button');
             buttons.forEach(b => b.addEventListener('click', () => {
                 buttons.forEach(x => x.classList.toggle('active', x === b));
-                letzterBereich = b.dataset.range;
-                anzeigen(b.dataset.range);
+                bereich = b.dataset.range;
+                anzeigen();
             }));
-            anzeigen('30');
+            $('btn-refresh').addEventListener('click', anzeigen);
+
+            let resizeTimer = null;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(anzeigen, 250);
+            });
+
+            // "Gesamt" braucht das erste Datum -> einmal vorab holen
+            const erst = await sb.rpc('get_stats', { p_from: '2000-01-01', p_to: '2000-01-01' });
+            if (erst.data) firstDay = erst.data.first_day;
+
+            anzeigen();
         }
 
-        start();
+        start().catch(zurStartseite);
     })();
     </script>
 </body>
